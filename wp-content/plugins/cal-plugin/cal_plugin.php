@@ -23,12 +23,7 @@ if(!class_exists('CaculatorForm')){
             $sql = "
             SELECT 
                 m.material_id,
-                m.material_name,
-                m.material_price,
-                m.material_price_50, 
-                m.material_price_100, 
-                m.material_price_200, 
-                m.material_price_big  
+                m.material_name 
             FROM wp_material m";
             return $wpdb->get_results($sql);
         }
@@ -38,12 +33,22 @@ if(!class_exists('CaculatorForm')){
             SELECT 
                 m.membran_id,
                 m.membran_name,
-                m.membran_price,
-                m.membran_price_50, 
-                m.membran_price_100, 
-                m.membran_price_200, 
-                m.membran_price_big  
+                m.membran_price
             FROM wp_membran m";
+            return $wpdb->get_results($sql);
+        }
+        function get_print_tech(){
+            global $wpdb;
+            $sql = "
+            SELECT p.print_id,
+                p.print_name,
+                p.print_price,
+                p.print_price_30,
+                p.print_price_50,
+                p.print_price_100,
+                p.print_price_200,
+                p.print_price_big 
+            FROM wp_print_tech p";
             return $wpdb->get_results($sql);
         }
         
@@ -53,34 +58,40 @@ function caculatorFormLoading(){
     global $cal_form ;
     $cal_form = new CaculatorForm();
     global $wpdb;
-
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
     //create data table
     $sql = "CREATE TABLE IF NOT EXISTS wp_material (
-       	material_id INT(11) NOT NULL AUTO_INCREMENT,
+        material_id INT(11) NOT NULL AUTO_INCREMENT,
         material_name VARCHAR(100) NOT NULL DEFAULT '0' COLLATE 'utf8mb4_general_ci',
-        material_price BIGINT(20) NULL DEFAULT NULL,
-        material_price_50 DOUBLE NULL DEFAULT NULL,
-        material_price_100 DOUBLE NULL DEFAULT NULL,
-        material_price_200 DOUBLE NULL DEFAULT NULL,
-        material_price_big DOUBLE NULL DEFAULT NULL,
-	PRIMARY KEY (material_id) USING BTREE
+        PRIMARY KEY (material_id) USING BTREE
     )
-    COMMENT= 'Chất liệu'
-    COLLATE= utf8mb4_general_ci
+    COMMENT='Chất liệu'
+    COLLATE='utf8mb4_general_ci'
     ENGINE=InnoDB";
-    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+    
     dbDelta($sql);
     $sql = "CREATE TABLE IF NOT EXISTS wp_membran (
         membran_id INT(11) NOT NULL AUTO_INCREMENT,
         membran_name VARCHAR(100) NOT NULL DEFAULT '0' COLLATE 'utf8mb4_general_ci',
-        membran_price BIGINT(20) NULL DEFAULT NULL,
-        membran_price_50 DOUBLE NULL DEFAULT NULL,
-        membran_price_100 DOUBLE NULL DEFAULT NULL,
-        membran_price_200 DOUBLE NULL DEFAULT NULL,
-        membran_price_big DOUBLE NULL DEFAULT NULL,
+        membran_price BIGINT(20) NULL DEFAULT '0',
     PRIMARY KEY (membran_id) USING BTREE
     )
     COMMENT= 'Màng bọc'
+    COLLATE= utf8mb4_general_ci
+    ENGINE=InnoDB";
+    dbDelta($sql);
+    $sql = "CREATE TABLE IF NOT EXISTS wp_print_tech (
+        print_id INT(11) NOT NULL AUTO_INCREMENT,
+        print_name VARCHAR(100) NOT NULL DEFAULT '0' COLLATE 'utf8mb4_general_ci',
+        print_price BIGINT(20) NULL DEFAULT '0',
+        print_price_30 BIGINT(20) NULL DEFAULT '0',
+        print_price_50 BIGINT(20) NULL DEFAULT '0',
+        print_price_100 BIGINT(20) NULL DEFAULT '0',
+        print_price_200 BIGINT(20) NULL DEFAULT '0',
+        print_price_big BIGINT(20) NULL DEFAULT '0',
+    PRIMARY KEY (print_id) USING BTREE
+    )
+    COMMENT= 'Công nghệ in'
     COLLATE= utf8mb4_general_ci
     ENGINE=InnoDB";
     dbDelta($sql);
@@ -89,7 +100,8 @@ function caculatorFormLoading(){
 function disableCaculatorForm(){
     global $wpdb;
     $wpdb->query( "DROP TABLE IF EXISTS wp_material" );
-    $wpdb->query( "DROP TABLE IF EXISTS wp_wp_membran" );
+    $wpdb->query( "DROP TABLE IF EXISTS wp_membran" );
+    $wpdb->query( "DROP TABLE IF EXISTS wp_print_tech" );
 }
 
 add_action( 'plugins_loaded', 'caculatorFormLoading' );
@@ -117,35 +129,74 @@ function cal_form_create_menu() {
 
 add_action('admin_menu', 'cal_form_create_menu'); 
 function save_material(){
-    
-     $material_id =  $_GET['material_id'];
      $material_name =  $_GET['material_name'];
-     $material_price =  $_GET['material_price'];
-     $material_price_50 =  $_GET['material_price_50'];
-     $material_price_100 =  $_GET['material_price_100'];
-     $material_price_200 =  $_GET['material_price_200'];
-     $material_price_big =  $_GET['material_price_big'];
-     $data = array( "material_name" => $material_name,
-     "material_price" => $material_price,
-     "material_price_50" => $material_price_50,
-     "material_price_100" => $material_price_100,
-     "material_price_200" => $material_price_200,
-     "material_price_big" => $material_price_big);
      global $wpdb;
-     if($material_id){
-        $data['material_id'] = $material_id;
-        $wpdb->replace("wp_material",$data);
-     }else{
-        $wpdb->insert("wp_material",$data);
-     }
+   
+     $data['material_name'] = $material_name;
+     $wpdb->insert("wp_material",$data);
      wp_redirect( admin_url( '/admin.php?page=cal-plugin%2Fcal_plugin.php' ) );
 }
 
+function delete_material(){
+    
+    $material_id =  $_GET['material_id'];
+    $data['material_id'] = $material_id;
+    global $wpdb;
+    $wpdb->delete("wp_material",$data);
+    wp_redirect( admin_url( '/admin.php?page=cal-plugin%2Fcal_plugin.php' ) );
+}
+
 add_action( 'admin_post_save_material', 'save_material' );
+add_action( 'admin_post_detete_material', 'delete_material' );
+
+function save_membran(){
+    global $wpdb;
+    $data['membran_name'] = $_GET['membran_name'];
+    $data['membran_price'] = $_GET['membran_price'];
+    $wpdb->insert("wp_membran",$data);
+    wp_redirect( admin_url( '/admin.php?page=cal-plugin%2Fcal_plugin.php' ) );
+}
+add_action( 'admin_post_save_membran', 'save_membran' );
+
+function delete_membran(){
+    
+    $data['membran_id'] =  $_GET['membran_id'];
+    global $wpdb;
+    $wpdb->delete("wp_membran",$data);
+    wp_redirect( admin_url( '/admin.php?page=cal-plugin%2Fcal_plugin.php' ) );
+}
+add_action( 'admin_post_delete_membran', 'delete_membran' );
+
+function save_print_tech(){
+    global $wpdb;
+    $data['print_name'] = $_GET['print_name'];
+    $data['print_price'] = $_GET['print_price'];
+    $data['print_price_30'] = $_GET['print_price_30'];
+    $data['print_price_50'] = $_GET['print_price_50'];
+    $data['print_price_100'] = $_GET['print_price_100'];
+    $data['print_price_200'] = $_GET['print_price_200'];
+    $data['print_price_big'] = $_GET['print_price_big'];
+
+    $wpdb->insert("wp_print_tech",$data);
+    wp_redirect( admin_url( '/admin.php?page=cal-plugin%2Fcal_plugin.php' ) );
+}
+add_action( 'admin_post_save_print_tech', 'save_print_tech' );
+
+function delete_print_tech(){
+    
+    $data['print_id'] =  $_GET['print_id'];
+    global $wpdb;
+    $wpdb->delete("wp_print_tech",$data);
+    wp_redirect( admin_url( '/admin.php?page=cal-plugin%2Fcal_plugin.php' ) );
+}
+add_action( 'admin_post_delete_print_tech', 'delete_print_tech' );
+
 function setting_pages() {
     $cal_form = new CaculatorForm();
     $materials = $cal_form->get_material();
     $membrans = $cal_form->get_membran();
+    $print_techs = $cal_form->get_print_tech();
+    $i = 1;
     
 ?>
 <div class="wrap">
@@ -154,60 +205,116 @@ function setting_pages() {
 <h2>Cài đặt chất liệu</h2>
 <table id="tb_material">
 <tr>
-    <th>Mã chất liệu</th>
+    <th>STT</th>
     <th>Tên chất liệu</th>
-    <th>giá tiền/m2</th>
-    <th>50< số lượng < 100 <br> (%)</th>
-    <th>100< số lượng < 200 <br> (%)</th>
-    <th>200< số lượng < 400 <br> (%)</th>
-    <th>400< số lượng<br> (%)</th>
     <th>action</th>
 </tr>
 <?php foreach($materials as $material) : ?>
     <tr>
-        <td><input type="hidden" name="material_id" value="<?php echo $material->material_name;?>"><?php echo $material->material_id;?></td>
-        <td><input type="text" name="material_name" value="<?php echo $material->material_name;?>"></td>
-        <td><input type="text" name="material_price" value="<?php echo $material->material_price;?>"></td>
-        <td><input type="text" name="material_price_50" value="<?php echo $material->material_price_50;?>"></td>
-        <td><input type="text" name="material_price_100" value="<?php echo $material->material_price_100;?>"></td>
-        <td><input type="text" name="material_price_200" value="<?php echo $material->material_price_200;?>"></td>
-        <td><input type="text" name="material_price_big" value="<?php echo $material->material_price_big;?>"></td>
-        <td><button onclick="save_material(this)" >Lưu</button><button onclick="del_material()" >Xóa</button></td>
+        <td><?php echo $i++?></td>
+        <td><?php echo $material->material_name;?></td>
+        <td><button onclick="del_material(<?php echo $material->material_id;?>)" >Xóa</button></td>
     </tr>
 
 <?php endforeach ?>
 
 </table>
-<button id="btn_add_row_material" >Thêm cột</button>
+<form onsubmit="return false;"> 
+    <label for="add_material_name">Tên chất liệu</label>
+    <input type="text" name="material_name" id="add_material_name">
+    <button id="btn_add_material" type="button" >Thêm chất liệu</button>
+ </form>
 
-<h2>Cài đặt chất liệu</h2>
-<form>
+
+<h2>Cài đặt màng bọc</h2>
 <table>
 <tr>
-    <th>Mã chất liệu</th>
-    <th>Tên chất liệu</th>
+    <th>STT</th>
+    <th>Tên màng</th>
     <th>giá tiền/m2</th>
-    <th>50< số lượng < 100 <br> (%)</th>
-    <th>100< số lượng < 200 <br> (%)</th>
-    <th>200< số lượng < 400 <br> (%)</th>
-    <th>400< số lượng<br> (%)</th>
 </tr>
-<?php foreach($membrans as $membran) : ?>
+<?php 
+    $i = 1;
+    foreach($membrans as $membran) : ?>
     <tr>
-        <td><?php echo $membran->membran_id;?></td>
+        <td><?php echo $i++?></td>
         <td><?php echo $membran->membran_name;?></td>
         <td><?php echo $membran->membran_price;?></td>
-        <td><?php echo $membran->membran_price_50;?></td>
-        <td><?php echo $membran->membran_price_100;?></td>
-        <td><?php echo $membran->membran_price_200;?></td>
-        <td><?php echo $membran->membran_price_big;?></td>
+        <td><button onclick="del_membran(<?php echo $membran->membran_id;?>)" >Xóa</button></td>
     </tr>
 
 <?php endforeach ?>
 
 </table>
-<button>Lưu giá trị</button>
-</form>
+<form onsubmit="return false;"> 
+    <label for="add_membran_name">Tên màng</label>
+    <input type="text" name="membran_name" id="add_membran_name">
+    <label for="add_membran_price">Giá tiền/m2</label>
+    <input type="number" name="membran_price" id="add_membran_price">
+    <button id="btn_add_membran" type="button" >Thêm màng</button>
+ </form>
+
+<h2>Cài đặt công nghệ in</h2>
+<table>
+<tr>
+
+    <th rowspan="2">STT</th>
+    <th rowspan="2">Tên công nghệ</th>
+    <th colspan="6">giá tiền/m2</th>
+    <th></th>
+    <th></th>
+    <th></th>
+    <th></th>
+    <th></th>
+    <th rowspan="2">action</th>
+</tr>
+<tr>
+    <th></th>
+    <th></th>
+    <th>Dưới 10m2</th>
+    <th>10-30m2</th>
+    <th>30-50m2</th>
+    <th>50-100m2</th>
+    <th>100-200m2</th>
+    <th>trên 200m2</th>
+    <th></th>
+</tr>
+<?php 
+    $i = 1;
+    foreach($print_techs as $pr) : ?>
+    <tr>
+        <td><?php echo $i++?></td>
+        <td><?php echo $pr->print_name;?></td>
+        <td><?php echo $pr->print_price;?></td>
+        <td><?php echo $pr->print_price_30;?></td>
+        <td><?php echo $pr->print_price_50;?></td>
+        <td><?php echo $pr->print_price_100;?></td>
+        <td><?php echo $pr->print_price_200;?></td>
+        <td><?php echo $pr->print_price_big;?></td>
+        <td><button onclick="del_print_tech(<?php echo $pr->print_id;?>)" >Xóa</button></td>
+    </tr>
+
+<?php endforeach ?>
+</table>
+
+<form onsubmit="return false;"> 
+    <label for="add_membran_name">Tên màng</label>
+    <input type="text" name="print_name" id="print_name">
+    <label for="add_membran_price">Dưới 10</label>
+    <input type="number" name="print_price" id="print_price">
+    <label for="add_membran_price">Dưới 2</label>
+    <input type="number" name="print_price_30" id="print_price_30">
+    <label for="add_membran_price">Dưới 3</label>
+    <input type="number" name="print_price_50" id="print_price_50">
+    <label for="add_membran_price">Dưới 4</label>
+    <input type="number" name="print_price_100" id="print_price_100">
+    <label for="add_membran_price">Dưới 5</label>
+    <input type="number" name="print_price_200" id="print_price_200">
+    <label for="add_membran_price">Dưới 6</label>
+    <input type="number" name="print_price_big" id="print_price_big">
+  
+    <button id="btn_save_print" type="button" >Lưu công nghệ in</button>
+ </form>
 
 
 </div>
