@@ -14,6 +14,7 @@
 if(!class_exists('CaculatorForm')){
     class CaculatorForm{
         function get_form() {
+            $print_techs = $this->get_print_tech();
             $materials = $this->get_material();
             $membrans = $this->get_membran();
             require_once('cal_form.php');
@@ -50,6 +51,51 @@ if(!class_exists('CaculatorForm')){
                 p.print_price_big 
             FROM wp_print_tech p";
             return $wpdb->get_results($sql);
+        }
+
+        function get_material_by_id($id){
+            global $wpdb;
+            $sql = "
+            SELECT 
+                m.material_id,
+                m.material_name 
+            FROM wp_material m
+            WHERE m.material_id = {$id}
+            LIMIT 1
+            ";
+            return $wpdb->get_row($sql);
+        }
+
+        function get_membran_by_id($id){
+            global $wpdb;
+            $sql = "
+            SELECT 
+                m.membran_id,
+                m.membran_name,
+                m.membran_price
+            FROM wp_membran m
+            WHERE m.membran_id = {$id}
+            LIMIT 1
+            ";
+            return $wpdb->get_row($sql);
+        }
+        function get_print_tech_by_id($id){
+            global $wpdb;
+            $sql = "
+            SELECT 
+                p.print_id,
+                p.print_name,
+                p.print_price,
+                p.print_price_30,
+                p.print_price_50,
+                p.print_price_100,
+                p.print_price_200,
+                p.print_price_big 
+            FROM wp_print_tech p
+            WHERE p.print_id = {$id}
+            LIMIT 1
+            ";
+            return $wpdb->get_row($sql);
         }
         
     }
@@ -169,6 +215,7 @@ add_action( 'admin_post_delete_membran', 'delete_membran' );
 
 function save_print_tech(){
     global $wpdb;
+    $data['print_id'] = $_GET['print_id'];
     $data['print_name'] = $_GET['print_name'];
     $data['print_price'] = $_GET['print_price'];
     $data['print_price_30'] = $_GET['print_price_30'];
@@ -177,7 +224,7 @@ function save_print_tech(){
     $data['print_price_200'] = $_GET['print_price_200'];
     $data['print_price_big'] = $_GET['print_price_big'];
 
-    $wpdb->insert("wp_print_tech",$data);
+    $wpdb->replace("wp_print_tech",$data);
     wp_redirect( admin_url( '/admin.php?page=cal-plugin%2Fcal_plugin.php' ) );
 }
 add_action( 'admin_post_save_print_tech', 'save_print_tech' );
@@ -190,6 +237,81 @@ function delete_print_tech(){
     wp_redirect( admin_url( '/admin.php?page=cal-plugin%2Fcal_plugin.php' ) );
 }
 add_action( 'admin_post_delete_print_tech', 'delete_print_tech' );
+
+function caculatorPrice(){
+   // wp_send_json( array( 'success' => $_GET["whatever"] ), 500 );
+    // $_GET["width"]
+    // $_GET["height"]
+    // $_GET["amount"]
+    // $_GET["print_tech_id"]
+    // $_GET["material_id"]
+    // $_GET["membran_id"]
+    if(!empty($_GET["width"])&&!empty($_GET["height"])&&!empty($_GET["amount"])&&!empty($_GET["print_tech_id"])&&!empty($_GET["material_id"])&&!empty($_GET["membran_id"])){
+        
+        $width = $_GET["width"];
+        $height = $_GET["height"];
+        $amount = $_GET["amount"];
+        $print_tech_id = $_GET["print_tech_id"];
+        $material_id = $_GET["material_id"];
+        $membran_id = $_GET["membran_id"];
+        $area = $width * $height * $amount;
+        
+        $cal = new CaculatorForm();
+        $material = $cal->get_material_by_id($material_id);
+        $membran = $cal->get_membran_by_id($membran_id);
+        $print_tech = $cal->get_print_tech_by_id($print_tech_id);
+
+       $price = $print_tech->print_price;
+        if($area >= 200000000){
+            $price = $print_tech->print_price_big;
+        }else if($area >= 100000000){
+            $price = $print_tech->print_price_200;
+        } else if($area >= 50000000){
+            $price = $print_tech->print_price_100;
+        } else if($area >= 30000000){
+            $price = $print_tech->print_price_50;
+        }else if($area >= 10000000){
+            $price = $print_tech->print_price_30;
+        }
+        $price += $membran->membran_price;
+
+        $price = $price < 0 ? 0: $price;
+
+        $total_price = $price * $area;
+        $vat_price = $total_price * (10/100);
+        $total_price_vat = $total_price + $vat_price;
+        $total_price = round($total_price);
+        $vat_price = round($vat_price);
+        $total_price_vat = round($total_price_vat);
+        
+        
+
+        $size = $width ."x" .$height ." mm";
+        $decal_type = $material->material_name .',' .$membran->membran_name;
+
+
+        $result = array(
+            "size"=>$size,
+            "amount"=>$amount,
+            "decal_type"=>$decal_type,
+            "print_type"=> $print_tech->print_name,
+            "price"=>$price,
+            "total_price"=>$total_price,
+            "vat_price"=>$vat_price,
+            "total_price_vat"=>$total_price_vat,
+        );
+
+        wp_send_json($result, 200 );
+
+    }else{
+        wp_send_json(null, 400 );
+    }
+
+    die();
+}
+add_action ('wp_ajax_nopriv_my_action', 'caculatorPrice');
+
+
 
 function setting_pages() {
     $cal_form = new CaculatorForm();
@@ -281,9 +403,10 @@ function setting_pages() {
 </tr>
 <?php 
     $i = 1;
+    echo admin_url( 'admin-ajax.php' );
     foreach($print_techs as $pr) : ?>
     <tr>
-        <td><?php echo $i++?></td>
+        <td><?php echo $i++?><input type="hidden" name="id" id="id" value="<?php echo $pr->print_id?>"></td>
         <td><?php echo $pr->print_name;?></td>
         <td><?php echo $pr->print_price;?></td>
         <td><?php echo $pr->print_price_30;?></td>
@@ -291,7 +414,7 @@ function setting_pages() {
         <td><?php echo $pr->print_price_100;?></td>
         <td><?php echo $pr->print_price_200;?></td>
         <td><?php echo $pr->print_price_big;?></td>
-        <td><button onclick="del_print_tech(<?php echo $pr->print_id;?>)" >Xóa</button></td>
+        <td><button onclick="edit_to_frm(this)" >Chỉnh sửa</button><button onclick="del_print_tech(<?php echo $pr->print_id;?>)" >Xóa</button></td>
     </tr>
 
 <?php endforeach ?>
@@ -299,6 +422,7 @@ function setting_pages() {
 
 <form onsubmit="return false;"> 
     <label for="add_membran_name">Tên màng</label>
+    <input type="hidden" name="print_id" id="print_id">
     <input type="text" name="print_name" id="print_name">
     <label for="add_membran_price">Dưới 10</label>
     <input type="number" name="print_price" id="print_price">
