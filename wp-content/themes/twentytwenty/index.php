@@ -20,8 +20,8 @@ get_header();
 <main id="site-content" role="main">
 <?php
 
- if($cal_form){
-	$cal_form->get_form();
+ if($leftletPlugin){
+	$leftletPlugin->get_form();
 }
 	
 ?>
