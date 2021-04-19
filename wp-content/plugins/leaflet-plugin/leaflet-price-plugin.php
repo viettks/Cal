@@ -13,8 +13,10 @@
 <?php
 if(!class_exists('LeafletPlugin')){
     class LeafletPlugin{
+        public $init = 0;
         function get_form() {
           $leaflets = $this->getData();
+          $leafFirst = $this->getDataByType("A5","C100");
           require_once('leaflet-form.php');
         }
 
@@ -41,6 +43,254 @@ if(!class_exists('LeafletPlugin')){
 
             return $wpdb->get_results($wpdb->prepare($sql,array($leaf_type,$material)));
         // return $wpdb->prepare($sql,array($leaf_type,$material));
+        }
+
+        function dataInit(){
+   
+        
+          global $wpdb;
+          
+         
+          $data["leaf_non_membran"] = 0;
+          $data["leaf_membran_01"] = 0;
+          $data["leaf_membran_02"] = 0;
+
+          $data["leaf_type"] = "A5";
+          $data["leaf_material"] = "C100";
+          $data["leaf_amout"] = 1000;
+          $data["leaf_price_per_page"] = 527;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 2000;
+          $data["leaf_price_per_page"] = 289;
+          $data["leaf_price"] = 578000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 4000;
+          $data["leaf_price_per_page"] = 221;
+          $data["leaf_price"] = 884000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 6000;
+          $data["leaf_price_per_page"] = 195;
+          $data["leaf_price"] = 1170000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 10000;
+          $data["leaf_price_per_page"] = 158;
+          $data["leaf_price"] = 1580000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 20000;
+          $data["leaf_price_per_page"] = 145;
+          $data["leaf_price"] = 2900000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          
+          $data["leaf_material"] = "C150";
+          $data["leaf_amout"] = 1000;
+          $data["leaf_price_per_page"] = 663;
+          $data["leaf_price"] = 663000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 2000;
+          $data["leaf_price_per_page"] = 257;
+          $data["leaf_price"] = 514000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 4000;
+          $data["leaf_price_per_page"] = 293;
+          $data["leaf_price"] = 1172000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 6000;
+          $data["leaf_price_per_page"] = 267;
+          $data["leaf_price"] = 1602000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 10000;
+          $data["leaf_price_per_page"] = 196;
+          $data["leaf_price"] = 1960000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 20000;
+          $data["leaf_price_per_page"] = 186;
+          $data["leaf_price"] = 3720000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          
+          $data["leaf_material"] = "C200";
+          $data["leaf_amout"] = 1000;
+          $data["leaf_price_per_page"] = 1050;
+          $data["leaf_price"] = 1050000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 2000;
+          $data["leaf_price_per_page"] = 680;
+          $data["leaf_price"] = 1360000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 4000;
+          $data["leaf_price_per_page"] = 540;
+          $data["leaf_price"] = 2160000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 6000;
+          $data["leaf_price_per_page"] = 400;
+          $data["leaf_price"] = 1170000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 2400000;
+          $data["leaf_price_per_page"] = 336;
+          $data["leaf_price"] = 3360000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 20000;
+          $data["leaf_price_per_page"] = 329;
+          $data["leaf_price"] = 6580000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+
+          $data["leaf_type"] = "A4";
+          $data["leaf_material"] = "C100";
+          $data["leaf_amout"] = 500;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 1000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 2000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 3000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 5000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 10000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          
+          $data["leaf_material"] = "C150";
+          $data["leaf_amout"] = 500;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 1000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 2000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 3000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 5000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 10000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+
+          $data["leaf_material"] = "C200";
+          $data["leaf_amout"] = 500;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 1000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 2000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 3000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 5000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 10000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+
+          $data["leaf_type"] = "A3";
+          $data["leaf_material"] = "C100";
+          $data["leaf_amout"] = 500;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 1000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 2000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 3000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 5000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 10000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          
+          $data["leaf_material"] = "C150";
+          $data["leaf_amout"] = 500;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 1000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 2000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 3000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 5000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 10000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_material"] = "C200";
+          $data["leaf_amout"] = 500;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 1000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 2000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 3000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 5000;
+          $data["leaf_price_per_page"] = 1054;
+          $data["leaf_price"] = 527000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+          $data["leaf_amout"] = 10000;
+          $wpdb->insert("wp_leftlet_detail",$data);
+
+          
+
         }
     }
 }
@@ -69,18 +319,33 @@ function registerLeafletPlugin(){
     ENGINE=InnoDB
     ";
     dbDelta($sql);
+    
+    $leftletPlugin->init ++;
+    if($leftletPlugin->init ==1){
+      $leftletPlugin->dataInit();
+    }
+    
 
 }
+
+
 function disableLeafletPlugin(){
     global $wpdb;
     $wpdb->query( "DROP TABLE IF EXISTS wp_leftlet_detail" );
 }
 
-add_action( 'plugins_loaded', 'registerLeafletPlugin' );
+function enableleaflet()
+{
+  global $leftletPlugin ;
+    $leftletPlugin = new LeafletPlugin();
+}
+
+add_action( 'plugins_loaded', 'enableleaflet' );
+register_activation_hook( __FILE__, "registerLeafletPlugin" );
 register_deactivation_hook( __FILE__, 'disableLeafletPlugin' );
  
 function create_menu_leafletPlugin() {
-        add_menu_page('Quản lý tờ rơi', 'Quản lý tờ rơi', 'administrator', __FILE__, 'setting_leaflet_cms', 1);
+        add_menu_page('Quản lý tờ rơi', 'Quản lý tờ rơi', 'administrator', __FILE__, 'setting_leaflet_cms',plugins_url("\leaflet-plugin\images\icon.jpg"), 1);
 }
 add_action('admin_menu', 'create_menu_leafletPlugin');
 
@@ -100,7 +365,7 @@ function save_leaflet(){
 add_action( 'admin_post_save_leaflet', 'save_leaflet' );
 
 function setting_leaflet_cms() {
-    $leftletPlugin = new LeafletPlugin();
+    global $leftletPlugin;
     $C100A3s = $leftletPlugin->getDataByType("A3","C100");
     $C150A3s = $leftletPlugin->getDataByType("A3","C100");
     $C200A3s = $leftletPlugin->getDataByType("A3","C100");
@@ -113,6 +378,7 @@ function setting_leaflet_cms() {
     $C150A5s = $leftletPlugin->getDataByType("A5","C100");
     $C200A5s = $leftletPlugin->getDataByType("A5","C100");
     //var_dump($C100A3s  );
+    echo $leftletPlugin->init;
 
  ?>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
